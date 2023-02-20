@@ -1,0 +1,9 @@
+{
+	"name": "Pet_Protection",
+	"version_number": "0.1.0",
+	"website_url": "https://github.com/zebediah49/PetProtection",
+	"description": "Prevent perma-death for tamed animals",
+	"dependencies": [
+		"denikson-BepInExPack_Valheim-5.4.1901"
+	]
+}

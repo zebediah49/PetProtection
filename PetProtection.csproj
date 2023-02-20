@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="localpaths.targets"/>
+
+    <PropertyGroup>
+        <ProjectGuid>{d14fb915-313e-4a0a-84d9-25270143e06a}</ProjectGuid>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <TargetFrameworkProfile />
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <!-- Debug build -->
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>none</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>Assemblies/</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <UseVSHostingProcess>false</UseVSHostingProcess>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <!-- Release build -->
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>Assemblies/</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>3</WarningLevel>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+
+
+    <!-- Dependencies -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="All" Version="1.0.0-preview.2" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>$(VALHEIM_MODS_PATH)\unstripped_corlib\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>$(VALHEIM_MODS_PATH)\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(VALHEIM_MODS_PATH)\unstripped_corlib\UnityEngine.AnimationModule.dll</HintPath>
+        </Reference>
+
+        <Reference Include="assembly_valheim">
+            <HintPath>$(VALHEIM_PATH)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="BepInEx, Version=5.4.5.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(VALHEIM_MODS_PATH)\BepInEx\core\BepInEx.dll</HintPath>
+        </Reference>
+        <Reference Include="BepInEx.Harmony, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(VALHEIM_MODS_PATH)\BepInEx\core\BepInEx.Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="BepInEx.Preloader, Version=5.4.5.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(VALHEIM_MODS_PATH)\BepInEx\core\BepInEx.Preloader.dll</HintPath>
+        </Reference>
+        <Reference Include="0Harmony, Version=2.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>$(VALHEIM_MODS_PATH)\BepInEx\core\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Xml.Linq" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="Source/PetProtection.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Package\plugins\" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" />
+        <None Include="manifest.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="icon.png" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
