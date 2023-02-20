@@ -6,7 +6,7 @@ TMPDIR=zip
 mkdir -p "$TMPDIR"
 
 cp Assemblies/PetProtection.dll "$TMPDIR"
-cp icon.png manifest.json README.md "$TMPDIR"
+cp icon.png manifest.json README.md CHANGELOG.md "$TMPDIR"
 
 rm -f PetProtection.zip
 ( cd "$TMPDIR";

@@ -5,14 +5,11 @@ using BepInEx;
 
 namespace PetProtection
 {
-    public class PetProtection
-    {
-	public static float stunRecoveryTime { get; internal set; } = 900f;
-    }
 
     [BepInPlugin("org.bepinex.plugins.pet_protection", "Pet Protection", version)]
-    public class PetProtectionPlugin : BaseUnityPlugin
+    public class PetProtection : BaseUnityPlugin
     {
+	public static float stunRecoveryTime { get; internal set; } = 900f;
 	public const string version = "0.1.0";
 
 	public static System.Timers.Timer mapSyncSaveTimer =
@@ -32,17 +29,17 @@ namespace PetProtection
     /// <summary>
     /// Determines what happens when a tamed creature takes damage.
     /// </summary>
-    [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
+    [HarmonyPatch(typeof(Character), nameof(Character.ApplyDamage))]
     public static class Character_Damage_Patch
     {
-	public static void Postfix(ref Character __instance, ref HitData hit)
+	public static void Postfix(ref Character __instance, ref HitData hit, ref bool showDamageText, ref bool triggerEffects, ref HitData.DamageModifier mod)
 	{
 	    // Network & Tameable component
 	    ZDO zdo = __instance.m_nview.GetZDO();
 	    Tameable tamed = __instance.GetComponent<Tameable>();
 
 	    // Is tamed, has network, has valid hit data, tamed component is present.
-	    if (!__instance.IsTamed() || zdo == null || hit == null || tamed == null)
+	    if (!__instance.IsTamed() || zdo == null || tamed == null)
 		return;
 
 	    // if killed on this hit
@@ -60,7 +57,13 @@ namespace PetProtection
 
 	private static bool ShouldIgnoreDamage(Character __instance, HitData hit, ZDO zdo)
 	{
+            if(hit == null)
+                return true;
 	    Character attacker = hit.GetAttacker();
+	    if(attacker == null) {
+                return true;
+	    }
+
 	    // Attacker is player
 	    if (attacker == __instance.GetComponent<Tameable>().GetPlayer(attacker.GetZDOID()))
 		return false;
