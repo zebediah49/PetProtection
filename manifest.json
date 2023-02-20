@@ -1,6 +1,6 @@
 {
 	"name": "Pet_Protection",
-	"version_number": "0.1.0",
+	"version_number": "0.2.0",
 	"website_url": "https://github.com/zebediah49/PetProtection",
 	"description": "Prevent perma-death for tamed animals",
 	"dependencies": [
