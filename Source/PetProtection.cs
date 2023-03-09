@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using Vector3 = UnityEngine.Vector3;
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 
 namespace PetProtection
@@ -10,7 +12,12 @@ namespace PetProtection
     [BepInPlugin("org.bepinex.plugins.pet_protection", "Pet Protection", version)]
     public class PetProtection : BaseUnityPlugin
     {
-        public static float stunRecoveryTime { get; internal set; } = 900f;
+        public static PetProtection instance;
+
+        public ConfigEntry<float> stunRecoveryTime;
+        private ConfigEntry<string> excludedListConfig;
+        public List<string> excludedList;
+
         public const string version = "0.2.0";
         internal static ManualLogSource Log;
 
@@ -22,10 +29,33 @@ namespace PetProtection
         // Awake is called once when both the game and the plug-in are loaded
         void Awake()
         {
+            instance = this;
             Log = base.Logger;
             //Log.LogInfo("Beginning Patch");
 
+            stunRecoveryTime = Config.Bind("General", "Stun recovery time", 900.0f, "Time in seconds pet will be stuneed after receiving a killing hit.");
+            excludedListConfig = Config.Bind("General", "Exclude list", "", "List of tamed creatures, which should not be proitected.");
+            excludedListConfig.SettingChanged += (_, _) => 
+            {
+              updateExcludedList();
+            };
+            updateExcludedList();
             harmony.PatchAll();
+        }
+
+        void updateExcludedList()
+        {
+            Logger.LogInfo("Updating excluded list");
+            string[] array = excludedListConfig.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            excludedList = new List<string>();
+            foreach (string text in array)
+            {
+              excludedList.Add(text.Trim());
+            }
+        }
+        void OnDestroy()
+        {
+          instance = null;
         }
     }
 
@@ -50,7 +80,7 @@ namespace PetProtection
             if (__instance.GetHealth() <= 5f)
             {
                 // Allow players to kill the tamed creature with ownerDamageOverride
-                if(ShouldIgnoreDamage(__instance, hit, zdo)){
+                if(ShouldIgnoreDamage(__instance, hit, zdo)) {
                     __instance.SetHealth(__instance.GetMaxHealth());
                     __instance.m_animator.SetBool("sleeping", true);
                     zdo.Set("sleeping", true);
@@ -59,10 +89,24 @@ namespace PetProtection
             }
         }
 
+        private static bool CheckExcluded(string name)
+        {
+          if (PetProtection.instance.excludedList.Count == 0) return false;
+          foreach (string excludedPrefix in PetProtection.instance.excludedList)
+          {
+            if (name.StartsWith(excludedPrefix)) return true;
+          }
+          return false;
+        }
+
         private static bool ShouldIgnoreDamage(Character __instance, HitData hit, ZDO zdo)
         {
             if(hit == null)
                 return true;
+
+            if (CheckExcluded(__instance.name))
+              return false;
+
             Character attacker = hit.GetAttacker();
             if(attacker == null) {
                 return true;
@@ -102,7 +146,7 @@ namespace PetProtection
             float timeSinceStun = zdo.GetFloat("timeSinceStun") + dt;
             zdo.Set("timeSinceStun", timeSinceStun);
 
-            if (timeSinceStun >= PetProtection.stunRecoveryTime)
+            if (timeSinceStun >= PetProtection.instance.stunRecoveryTime.Value)
             {
                 zdo.Set("timeSinceStun", 0f);
                 monsterAI.m_sleepTimer = 0.5f;
@@ -127,7 +171,17 @@ namespace PetProtection
 
             // If tamed creature is recovering from a stun, then add Stunned to hover text.
             if (tameable.m_character.m_nview.GetZDO().GetBool("isRecoveringFromStun"))
-                __result = __result.Insert(__result.IndexOf(" )"), ", Stunned");
+            {
+                int pos = __result.IndexOf(" )");
+                if (pos < 0)
+                {
+                  __result = __result.Insert(0, "(Stunned)\n");
+                }
+                else
+                {
+                  __result = __result.Insert(pos, ", Stunned");
+                }
+            }
         }
     }
 }
