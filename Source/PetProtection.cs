@@ -12,9 +12,9 @@ namespace PetProtection
     [BepInPlugin("org.bepinex.plugins.pet_protection", "Pet Protection", version)]
     public class PetProtection : BaseUnityPlugin
     {
-    		public static PetProtection instance;
+        public static PetProtection instance;
 
-    		public ConfigEntry<float> stunRecoveryTime;
+        public ConfigEntry<float> stunRecoveryTime;
         private ConfigEntry<string> excludedListConfig;
         public List<string> excludedList;
 
@@ -33,30 +33,30 @@ namespace PetProtection
             Log = base.Logger;
             //Log.LogInfo("Beginning Patch");
 
-			      stunRecoveryTime = Config.Bind("General", "Stun recovery time", 900.0f, "Time in seconds pet will be stuneed after receiving a killing hit.");
-			      excludedListConfig = Config.Bind("General", "Exclude list", "", "List of tamed creatures, which should not be proitected.");
-						excludedListConfig.SettingChanged += (_, _) => 
-						{
-							updateExcludedList();
-						};
-						updateExcludedList();
-						harmony.PatchAll();
+            stunRecoveryTime = Config.Bind("General", "Stun recovery time", 900.0f, "Time in seconds pet will be stuneed after receiving a killing hit.");
+            excludedListConfig = Config.Bind("General", "Exclude list", "", "List of tamed creatures, which should not be proitected.");
+            excludedListConfig.SettingChanged += (_, _) => 
+            {
+              updateExcludedList();
+            };
+            updateExcludedList();
+            harmony.PatchAll();
         }
 
         void updateExcludedList()
         {
-        		Logger.LogInfo("Updating excluded list");
-						string[] array = excludedListConfig.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-						excludedList = new List<string>();
-						foreach (string text in array)
-						{
-							excludedList.Add(text.Trim());
-						}
+            Logger.LogInfo("Updating excluded list");
+            string[] array = excludedListConfig.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            excludedList = new List<string>();
+            foreach (string text in array)
+            {
+              excludedList.Add(text.Trim());
+            }
         }
-    		void OnDestroy()
-    		{
-    			instance = null;
-    		}
+        void OnDestroy()
+        {
+          instance = null;
+        }
     }
 
     /// <summary>
@@ -89,15 +89,15 @@ namespace PetProtection
             }
         }
 
-		    private static bool CheckExcluded(string name)
-    		{
-		    	if (PetProtection.instance.excludedList.Count == 0) return false;
-		    	foreach (string excludedPrefix in PetProtection.instance.excludedList)
-    			{
-    				if (name.StartsWith(excludedPrefix)) return true;
-		    	}
-   				return false;
-		    }
+        private static bool CheckExcluded(string name)
+        {
+          if (PetProtection.instance.excludedList.Count == 0) return false;
+          foreach (string excludedPrefix in PetProtection.instance.excludedList)
+          {
+            if (name.StartsWith(excludedPrefix)) return true;
+          }
+          return false;
+        }
 
         private static bool ShouldIgnoreDamage(Character __instance, HitData hit, ZDO zdo)
         {
@@ -105,7 +105,7 @@ namespace PetProtection
                 return true;
 
             if (CheckExcluded(__instance.name))
-            	return false;
+              return false;
 
             Character attacker = hit.GetAttacker();
             if(attacker == null) {
@@ -175,11 +175,11 @@ namespace PetProtection
                 int pos = __result.IndexOf(" )");
                 if (pos < 0)
                 {
-                	__result = __result.Insert(0, "(Stunned)\n");
+                  __result = __result.Insert(0, "(Stunned)\n");
                 }
                 else
                 {
-                	__result = __result.Insert(pos, ", Stunned");
+                  __result = __result.Insert(pos, ", Stunned");
                 }
             }
         }
